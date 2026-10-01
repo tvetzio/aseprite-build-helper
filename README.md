@@ -1,441 +1,757 @@
-ASEPRITE BUILD HELPER
-=====================
+# Aseprite Build Helper
 
-Release: v1.0
-Platform: Windows x64
-Repository: https://github.com/tvetzio/aseprite-build-helper
+**Version 1.2.9 · Windows x64 · Unofficial**  
+Created and maintained by **Etzio**  
+Project: https://github.com/tvetzio/aseprite-build-helper
 
-English
--------
+> [!IMPORTANT]
+> **Extract the package into its own writable folder before running it.**
+> Do not leave the four files loose on the Desktop. ABH creates an `ABH\` working folder next to `aseprite-build-helper.bat` for its launcher, updater, configuration, logs, backups and other runtime data.
+>
+> Example:
+>
+> ```text
+> C:\Users\<YOU>\AsepriteBuildHelper\
+> ```
 
+[English](#english) · [Deutsch](#deutsch)
 
-Project attribution
-~~~~~~~~~~~~~~~~~~~
-This helper is its own project. If you publish it or share it with friends,
-put your credit here rather than implying that you created Aseprite or any of
-the third-party extensions.
+---
 
-Suggested wording:
+<a id="english"></a>
+## English
 
-  Aseprite Personal Build Helper
-  Created and maintained by: Etzio
-  Project page: https://github.com/tvetzio/aseprite-build-helper
+Aseprite Build Helper (ABH) is an unofficial Windows x64 helper for compiling Aseprite from the official source repository and maintaining the resulting local build.
 
-Aseprite itself is created by Igara Studio / the Aseprite contributors and is
-subject to Aseprite's own EULA. Third-party themes, scripts and extensions stay
-credited to their respective authors.
+ABH does **not** distribute a compiled `aseprite.exe`. Aseprite is cloned from the official repository and compiled locally on your computer.
 
-If you publish this on GitHub, a good place for your name is:
-- this "Project attribution" section
-- the repository description/about box
-- the copyright header of the BAT/VBS helper files
+### Current v1.2.9 behavior
 
-Do not remove the original project/source links below.
+The current runtime is based on the stable v1.2 flow and incorporates the fixes made during the v1.2.x test cycle: the builder remains the setup/compiler component, the **Aseprite Build Updater** owns maintenance and manual updates, the normal launcher performs scheduled checks invisibly, interactive progress stays in the same console, ABH self-update failures do not block Aseprite/theme/add-on checks, the uninstaller is launched from a temporary copy so it can remove the managed runtime folder, and bug-report diagnostics are generated locally before the GitHub issue page is opened.
 
-Repository license
-~~~~~~~~~~~~~~~~~~
-The original helper code in this repository is licensed under the MIT License;
-see LICENSE. Aseprite, Skia, themes, extensions, scripts, build tools and all
-other third-party projects are not relicensed by this repository. Their own
-licenses, EULAs and terms continue to apply. See THIRD_PARTY_NOTICES.md.
+### Package contents
 
-What this is
-~~~~~~~~~~~~
-This is a small personal build helper for Aseprite on Windows. It is not an
-Aseprite distribution and it does not contain a compiled copy of Aseprite.
+The release ZIP contains only:
 
-On a first-time setup it checks the machine, points you to the official pages
-for anything that is missing, clones the official Aseprite source code, and
-builds Aseprite locally on that computer.
+```text
+aseprite-build-helper.bat
+README.md
+LICENSE
+THIRD_PARTY_NOTICES.md
+```
 
-After that, the hidden launcher is the normal way to start Aseprite. It keeps
-the usual launch quick and only performs network checks when they are due.
+Everything under `ABH\` is generated after setup.
 
-Files in this package
-~~~~~~~~~~~~~~~~~~~~~
-1. aseprite_personal_build_helper.bat
-   The actual builder, updater and launcher. It also contains the small support
-   scripts used by the helper and extracts them locally when needed.
+### Quick setup
 
-2. aseprite_personal_build_helper_hidden.vbs
-   Starts the helper without a console window. If Aseprite has not been built
-   yet, the BAT automatically opens a visible first-time setup instead.
+1. Create a dedicated writable folder.
+2. Extract all four package files into that folder.
+3. Run `aseprite-build-helper.bat`.
+4. Complete the prerequisite check once.
+5. The remaining setup runs automatically.
 
-3. README.md
-   Project documentation, setup notes, maintenance commands and source links.
+First setup performs:
 
-4. LICENSE
-   MIT License for the original Aseprite Build Helper code maintained by Etzio.
+```text
+Check prerequisites
+→ Prepare Aseprite source
+→ Validate Skia
+→ Build Aseprite
+→ Install/sync themes and add-ons
+→ Create launcher, updater and uninstaller
+→ Create desktop shortcuts
+→ Finish
+```
 
-5. THIRD_PARTY_NOTICES.md
-   Lists third-party projects referenced or downloaded by the helper and clarifies
-   that their own licenses and terms remain applicable.
+A short Windows system sound is played after a successful setup and Aseprite is started.
 
-Quick setup
-~~~~~~~~~~~
-Put all five files in the same folder, for example:
+If the package files are placed directly on the Desktop, ABH warns before continuing because the helper creates several working folders beside the BAT file.
 
-  C:\AsepriteBuildHelper\
+### Prerequisites
 
-For the first run, double-click:
+ABH checks for:
 
-  aseprite_personal_build_helper_hidden.vbs
-
-The setup window checks:
 - Git for Windows
 - CMake
 - Ninja
 - Visual Studio C++ toolchain
 - Windows SDK
-- Skia m124 Windows x64 Release
-- the Aseprite source target folder
-- free disk space
+- required Skia files
+- sufficient free disk space
 
-If something is missing, the setup window shows what is wrong and provides
-buttons to the official download pages. It does not silently continue with a
-broken build.
+The current initial build expects Skia at:
 
-Skia
-~~~~
-The helper expects:
+```text
+C:\deps\skia\out\Release-x64\skia.lib
+```
 
-  C:\deps\skia\out\Release-x64\skia.lib
+Initial Skia package:
 
-Official direct download used by this helper:
+https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-Windows-Release-x64.zip
 
-  https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-Windows-Release-x64.zip
+### Language
 
-Extract the archive so that the path above exists. Do not create an extra
-Skia-Windows-Release-x64 folder level around it.
+ABH detects the Windows UI language automatically:
 
-Desktop shortcuts
-~~~~~~~~~~~~~~~~~
-On first run, the helper automatically creates two desktop shortcuts if they do
-not exist yet:
-- Aseprite
-- Aseprite Personal Build Helper
+- `de-*` → German
+- all other languages → English
 
-Both shortcuts use the embedded pixel icon from this package. This is the most
-reliable way to give the hidden launcher and the helper a proper Windows icon,
-because BAT/VBS files themselves cannot carry a custom Explorer icon in a
-portable way.
-
-Where Aseprite is built
-~~~~~~~~~~~~~~~~~~~~~~~
-Source:
-  C:\aseprite
-
-Executable after a successful build:
-  C:\aseprite\build\bin\aseprite.exe
-
-The helper starts from Aseprite v1.3.18.6 and later checks stable version tags.
-
-Updates
-~~~~~~~
-Aseprite:
-- checks for a newer stable tag at most every 6 hours
-- if there is no update, the installed executable starts normally
-- if GitHub is unavailable, the installed executable still starts
-- if a newer Aseprite release needs a different Skia revision, the existing
-  build is kept instead of blindly breaking it
-
-Themes and third-party add-ons:
-- checked at most every 24 hours
-- updated in the background
-- cloned from their original GitHub repositories
-- not bundled as third-party source code inside this package
-
-Local GameDev helpers:
-- Game Pixel Starter
-- Game Asset Template Generator
-- Game Export Pack
-- Autotile Template Generator
-- Game Collision / Pivot Metadata
-- Pivot / Origin Presets
-
-These are copied into Aseprite's Scripts folder by the helper.
-
+The builder also supports:
 
-Maintenance / repair
-~~~~~~~~~~~~~~~~~~~~
-The visible BAT also has maintenance commands:
-
-  aseprite_personal_build_helper.bat --maintenance
-      Opens a small maintenance menu.
-
-  aseprite_personal_build_helper.bat --status
-      Shows the helper version, Aseprite state, Skia state and script counts.
-
-  aseprite_personal_build_helper.bat --force-update
-      Clears the 6/24-hour timers so all normal update checks are due again.
-
-  aseprite_personal_build_helper.bat --repair
-      Reinstalls local helper scripts and immediately resyncs themes/add-ons.
-
-  aseprite_personal_build_helper.bat --backup
-      Backs up %APPDATA%\Aseprite to:
-      Documents\AsepritePersonalBuildHelper\Backups
-
-  aseprite_personal_build_helper.bat --restore
-      Restores the newest configuration backup. Before restoring, the helper
-      also creates a safety backup of the current configuration.
-
-The maintenance menu also provides shortcuts to the logs, extensions, scripts
-and build folders.
-
-Logs
-~~~~
-Main build/start log:
-  %LOCALAPPDATA%\AsepriteBuild\aseprite_boot.log
-
-Theme log:
-  %LOCALAPPDATA%\AsepriteBuild\aseprite_themes.log
-
-Add-on log:
-  %LOCALAPPDATA%\AsepriteBuild\aseprite_addons.log
-
-Language
-~~~~~~~~
-The first-time setup uses the Windows UI language:
-- German Windows -> German setup
-- everything else -> English setup
-
-Manual override:
-  aseprite_personal_build_helper.bat --lang=de
-  aseprite_personal_build_helper.bat --lang=en
-
-Aseprite license note
-~~~~~~~~~~~~~~~~~~~~~
-Aseprite's own license terms apply to Aseprite. This helper does not replace
-or modify those terms.
-
-The Aseprite FAQ says the source code may be downloaded, compiled and used for
-personal purposes, while compiled versions must not be redistributed to third
-parties. The current EULA also says the source code may only be compiled or
-modified for your own personal purpose or to propose a contribution.
-
-Official references:
-- Aseprite FAQ:
-  https://www.aseprite.org/faq/
-- Aseprite EULA:
-  https://github.com/aseprite/aseprite/blob/main/EULA.txt
-- Aseprite source:
-  https://github.com/aseprite/aseprite
-
-There is also an open Aseprite issue discussing possible clarification around
-fully automated compilation solutions. If you plan to publish this helper
-publicly, review the current Aseprite EULA/FAQ yourself before doing so:
-  https://github.com/aseprite/aseprite/issues/4424
-
-This README is not legal advice.
-
-Official prerequisite links
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Git for Windows:
-  https://git-scm.com/download/win
-
-CMake:
-  https://cmake.org/download/
-
-Visual Studio Community:
-  https://visualstudio.microsoft.com/vs/community/
-
-Ninja:
-  https://github.com/ninja-build/ninja/releases
-
-Skia m124 x64 Release:
-  https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-Windows-Release-x64.zip
-
-Aseprite:
-  https://github.com/aseprite/aseprite
-
-Third-party theme/add-on sources
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The helper fetches these projects from their original repositories. Their own
-licenses and terms remain applicable. They are listed here so there is no
-mystery about what the helper contacts:
-
-- https://github.com/Beatso/UsefulAsepriteScripts
-- https://github.com/Gabinou/tilemap_scripts_aseprite
-- https://github.com/IoriBranford/aseprite-import-lpc-character
-- https://github.com/JRiggles/Lospec-Palette-Importer
-- https://github.com/Limeth/aseprite-iso-scripts
-- https://github.com/Lyutria/aseprite-studio-theme
-- https://github.com/OpsisKalopsis/aseprite-scripts
-- https://github.com/Pixeltica/AsepriteExtensions
-- https://github.com/SavuGeorge/Aseprite-scripts-for-normal-map-and-tileset-manipulation
-- https://github.com/Snepsid/aseprite-scripts
-- https://github.com/TekF/Aseprite-Scripts
-- https://github.com/ZachIsAGardner/ZacharyAsepriteScripts
-- https://github.com/aseprite/Aseprite-Script-Examples
-- https://github.com/behreajj/Aletheia
-- https://github.com/carlmartus/aseprite_normalmap
-- https://github.com/catppuccin/aseprite
-- https://github.com/christopherwk210/aseprite-scripts
-- https://github.com/colinlienard/aseprite-scripts
-- https://github.com/davebarkeruk/Aseprite_LUA_Scripts
-- https://github.com/dominickjohn/aseprite
-- https://github.com/dracula/aseprite
-- https://github.com/el-falso/monaki-theme
-- https://github.com/emhuo/dark-moon-theme
-- https://github.com/exokem/aseprite-dithering-brushes
-- https://github.com/iNightfaller/aseprite-ez-outline
-- https://github.com/jmswrnr/aseprite-themes
-- https://github.com/marsn3/aseprite-nord
-- https://github.com/mrbrownjeremy/aseprite-scripts
-- https://github.com/pancelor/aseprite-puzzlescript-export
-- https://github.com/quantumsheep/aseprite-export-layers
-- https://github.com/rikfuzz/aseprite-scripts
-- https://github.com/sandord/aseprite-scripts
-- https://github.com/securas/EdgeNormals
-- https://github.com/thkwznk/aseprite-scripts
-
-
-Deutsch
--------
-
-
-Projekt / Credits
-~~~~~~~~~~~~~~~~~
-Wenn du den Helper weitergibst oder auf GitHub stellst, ist hier der richtige
-Platz fuer deinen Namen bzw. GitHub-Handle:
-
-  Aseprite Personal Build Helper
-  Created and maintained by: Etzio
-  Project page: https://github.com/tvetzio/aseprite-build-helper
-
-Damit ist klar, dass du den Build-Helper erstellt/verwaltet hast, aber nicht
-Aseprite selbst oder die eingebundenen Drittanbieter-Erweiterungen.
-
-Aseprite und alle Drittanbieter-Projekte behalten natuerlich ihre jeweiligen
-Urheber-/Lizenzhinweise und Original-Links.
-
-Lizenz dieses Repositories
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-Der originale Helper-Code dieses Repositories steht unter der MIT License;
-siehe LICENSE. Aseprite, Skia, Themes, Extensions, Scripte, Build-Werkzeuge und
-andere Drittanbieter-Projekte werden dadurch nicht neu lizenziert. Fuer sie
-gelten weiterhin ihre jeweiligen Lizenzen, EULAs und Bedingungen. Siehe
-THIRD_PARTY_NOTICES.md.
-
-Was ist das?
-~~~~~~~~~~~~
-Das hier ist ein kleiner persoenlicher Build-Helfer fuer Aseprite unter
-Windows. Es ist keine Aseprite-Distribution und es ist keine fertig
-kompilierte Aseprite-Version enthalten.
-
-Beim ersten Start prueft der Helfer den PC, zeigt bei fehlenden Komponenten die
-offiziellen Downloadseiten an, holt den offiziellen Aseprite-Quellcode und
-kompiliert Aseprite lokal auf diesem Rechner.
-
-Danach wird normalerweise nur noch die versteckte VBS-Datei gestartet. Der
-normale Start bleibt dadurch schnell; Netzwerkpruefungen laufen nur, wenn sie
-wirklich faellig sind.
-
-Die Dateien
-~~~~~~~~~~~
-- aseprite_personal_build_helper.bat
-- aseprite_personal_build_helper_hidden.vbs
-- README.md
-- LICENSE
-- THIRD_PARTY_NOTICES.md
-
-Alle Dateien gehoeren in denselben Ordner, zum Beispiel:
-
-  C:\AsepriteBuildHelper\
-
-Zum Starten einfach:
-
-  aseprite_personal_build_helper_hidden.vbs
-
-Beim allerersten Start wird die Einrichtung automatisch sichtbar geoeffnet.
-Wenn etwas fehlt, bekommst du eine konkrete Meldung und passende offizielle
-Links. Der Build wird nicht einfach blind fortgesetzt.
-
-Skia muss nach dem Entpacken hier liegen:
-
-  C:\deps\skia\out\Release-x64\skia.lib
-
-Direkter offizieller Download, den der Helfer verwendet:
-
-  https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-Windows-Release-x64.zip
-
-Desktop-Verknuepfungen
-~~~~~~~~~~~~~~~~~~~~~~~~
-Beim ersten Start legt der Helfer automatisch zwei Desktop-Verknuepfungen an,
-falls sie noch nicht vorhanden sind:
-- Aseprite
-- Aseprite Personal Build Helper
-
-Beide Verknuepfungen verwenden das in diesem Paket eingebettete Pixel-Icon.
-Das ist die zuverlaessigste portable Methode, weil BAT- und VBS-Dateien selbst
-unter Windows nicht sinnvoll direkt ein eigenes Explorer-Icon tragen koennen.
-
-Der Aseprite-Quellcode liegt danach unter:
-
-  C:\aseprite
-
-Die gebaute EXE liegt unter:
-
-  C:\aseprite\build\bin\aseprite.exe
-
-
-Wartung / Reparatur
-~~~~~~~~~~~~~~~~~~~
-Die sichtbare BAT kann auch als kleines Wartungswerkzeug benutzt werden:
-
-  aseprite_personal_build_helper.bat --maintenance
-      Oeffnet ein Wartungsmenue.
-
-  aseprite_personal_build_helper.bat --status
-      Zeigt Helper-Version, Aseprite-/Skia-Status und Script-Anzahl.
-
-  aseprite_personal_build_helper.bat --force-update
-      Setzt die 6-/24-Stunden-Timer zurueck, damit alle Update-Pruefungen
-      beim naechsten normalen Start sofort faellig sind.
-
-  aseprite_personal_build_helper.bat --repair
-      Installiert die lokalen Helper-Scripte neu und synchronisiert Themes
-      und Add-ons sofort.
-
-  aseprite_personal_build_helper.bat --backup
-      Sichert %APPDATA%\Aseprite nach:
-      Documents\AsepritePersonalBuildHelper\Backups
-
-  aseprite_personal_build_helper.bat --restore
-      Stellt das neueste Backup wieder her. Vorher wird vorsichtshalber noch
-      ein Backup des aktuellen Zustands angelegt.
-
-Update-Verhalten
-~~~~~~~~~~~~~~~~
-- Aseprite: maximal alle 6 Stunden pruefen
-- Themes: maximal alle 24 Stunden im Hintergrund
-- Erweiterungen/Skripte: maximal alle 24 Stunden im Hintergrund
-- kein Internet: vorhandenes Aseprite trotzdem starten
-
-Lizenzhinweis
-~~~~~~~~~~~~~
-Fuer Aseprite gelten die Bedingungen von Aseprite selbst. Laut FAQ darf der
-Quellcode fuer persoenliche Zwecke selbst kompiliert werden; fertig
-kompilierte Aseprite-Versionen duerfen nicht an Dritte weitergegeben werden.
-
-FAQ:
-  https://www.aseprite.org/faq/
-
-EULA:
-  https://github.com/aseprite/aseprite/blob/main/EULA.txt
-
-Aseprite-Repository:
-  https://github.com/aseprite/aseprite
-
-Es gibt ausserdem eine offene Diskussion zur genaueren Regelung vollautomatischer
-Build-Loesungen:
-  https://github.com/aseprite/aseprite/issues/4424
-
-Wenn du das Projekt oeffentlich auf GitHub stellen willst, pruefe die dann
-aktuelle EULA/FAQ bitte selbst noch einmal. Dieser Hinweis ist keine
-Rechtsberatung.
-
-Die verwendeten Themes und Erweiterungen werden nicht in diesem Paket
-mitgeliefert. Der Helfer holt sie direkt aus den oben aufgefuehrten
-Original-Repositories; deren jeweilige Lizenzen gelten weiterhin.
+```text
+aseprite-build-helper.bat --lang=de
+aseprite-build-helper.bat --lang=en
+```
+
+The generated updater and uninstaller use the same language detection.
+
+### What is created after setup?
+
+ABH keeps generated data in a single `ABH\` folder beside the original package files:
+
+```text
+ABH\
+├─ launcher\
+│  ├─ aseprite-launcher.vbs
+│  └─ helper_icon.ico
+├─ updater\
+│  ├─ aseprite-build-updater.bat
+│  ├─ force_update.ico
+│  └─ backup\                 # previous ABH package files after self-updates
+├─ uninstaller\
+│  ├─ uninstall-abh.bat
+│  └─ uninstall.ico
+├─ support\                   # internal PowerShell/Lua helper components
+├─ config\
+│  ├─ settings.ini
+│  └─ sources\
+│     ├─ themes\
+│     ├─ addons\
+│     └─ mixed\
+├─ logs\
+│  ├─ user\
+│  └─ dev\
+├─ reports\
+├─ backups\
+├─ manifest\
+├─ state\
+└─ managed\
+```
+
+Do not use ABH-managed directories as personal storage. Destructive uninstall options can remove complete managed folders, including files that you manually placed inside them.
+
+### Desktop shortcuts
+
+ABH creates only two desktop shortcuts:
+
+- **Aseprite** — normal everyday launch
+- **Aseprite Build Updater** — updates, maintenance, configuration, diagnostics and uninstall access
+
+There is intentionally **no separate uninstall shortcut**. The uninstaller stays inside `ABH\uninstaller\` and is opened from Aseprite Build Updater.
+
+Old v1.1 shortcuts such as `Aseprite - Force Update Check` and `Aseprite Build Helper - Uninstall` are removed when v1.2 runtime files are repaired/generated.
+
+### Builder vs. launcher vs. updater vs. uninstaller
+
+The components have separate responsibilities.
+
+#### `aseprite-build-helper.bat`
+
+The original package BAT is primarily the compiler/setup component:
+
+- first setup
+- prerequisite validation
+- initial source clone
+- Skia validation
+- compile/recompile Aseprite
+- check/build a new Aseprite release
+- repair the generated launcher/updater/uninstaller
+
+After setup, double-clicking it shows only compiler-related choices. Normal maintenance has been moved out of the builder.
+
+#### `ABH\launcher\aseprite-launcher.vbs`
+
+The launcher is used by the **Aseprite** shortcut. It starts the updater silently in scheduled mode. If no check is due, Aseprite starts without a visible maintenance window.
+
+#### `ABH\updater\aseprite-build-updater.bat`
+
+This is the central maintenance application and is opened by **Aseprite Build Updater**.
+
+Current menu:
+
+```text
+[1] Check all updates now
+[2] Check ABH self-update only
+[3] Check Aseprite update only
+[4] Sync themes / add-ons / scripts
+[5] Show status
+[6] Repair / resync
+[7] Change update interval
+[8] Open source configurations
+[9] Back up Aseprite configuration
+[A] Restore newest configuration backup
+[L] Open logs
+[M] Show files and folders managed by ABH
+[D] Export diagnostic package for a bug report
+[R] Report a bug
+[U] Uninstall
+[0] Exit
+```
+
+#### `ABH\uninstaller\uninstall-abh.bat`
+
+The uninstaller has its own folder and is only launched from the updater or manually from that folder.
+
+### Scheduled update checks
+
+Default interval: **12 hours**.
+
+The scheduled launcher checks:
+
+1. ABH itself
+2. Aseprite
+3. themes
+4. add-ons/scripts
+
+The interval can be changed from **Aseprite Build Updater → Change update interval**:
+
+```text
+1 hour
+3 hours
+6 hours
+12 hours (default)
+24 hours
+custom value (minimum 1 hour)
+```
+
+The selected value is stored in:
+
+```text
+ABH\config\settings.ini
+```
+
+### ABH self-update
+
+Aseprite Build Updater can check the official project releases for a newer ABH version:
+
+https://github.com/tvetzio/aseprite-build-helper
+
+Self-update behavior:
+
+1. Check the latest official GitHub Release.
+2. Compare it with the locally installed ABH version.
+3. Show the new version when one is available.
+4. Ask for confirmation before installing it.
+5. Download the matching `abh-win64-v*.zip` release asset.
+6. Validate that the required package files exist in the ZIP.
+7. Back up the current four package files.
+8. Replace only the package files.
+9. Regenerate the v1.2 runtime components.
+10. Restart Aseprite Build Updater.
+
+ABH configuration, source INIs, logs, reports and backups under `ABH\` are preserved.
+
+If applying the update fails, ABH attempts to restore the previous package files and regenerate the previous runtime components.
+
+Self-update never installs a release without user confirmation. A scheduled background check can detect that an update exists, but installation remains a user decision.
+
+> Self-update requires the GitHub repository/release to be reachable. If it is private or GitHub cannot be reached, ABH simply keeps the installed version and continues.
+
+### Progress, colors and completion sound
+
+First setup and interactive update operations show progress directly in the current console window. Scheduled checks from the Aseprite launcher stay hidden.
+
+Interactive setup and updater operations show their current step directly in the same console window. Scheduled checks started by the normal **Aseprite** shortcut stay hidden.
+
+Colors indicate the current operation:
+
+- **Blue/Cyan** — checks and Aseprite-related operations
+- **Purple** — theme operations
+- **Green** — add-ons/scripts and successful completion
+- **Orange/Yellow** — configure/build/compile operations
+- **Yellow** — warnings
+- **Red** — errors
+
+Some operations such as compilation or cloning cannot provide a trustworthy exact percentage. ABH therefore shows phase/step progress instead of inventing an exact value.
+
+ABH plays a short built-in Windows system sound after a **successful interactive completion** of:
+
+- first-time setup
+- a manual update run
+- a manual theme/add-on/script synchronization
+- a successful repair/resync or rebuild operation
+
+Scheduled background checks stay silent. No additional audio file is included in the package. The completion sound is not intentionally played for an aborted or failed operation.
+
+### Source configuration: one INI per repository
+
+Every theme/add-on source has its own INI file:
+
+```text
+ABH\config\sources\themes\
+ABH\config\sources\addons\
+ABH\config\sources\mixed\
+```
+
+Example:
+
+```ini
+[Source]
+name=My custom add-on
+type=addon
+repository=https://github.com/USER/REPOSITORY.git
+enabled=true
+auto_update=false
+install_mode=both
+managed_by=user
+```
+
+Important values:
+
+- `enabled=true` — ABH uses the source
+- `enabled=false` — ABH ignores the source
+- `auto_update=true` — ABH may pull new revisions automatically
+- `auto_update=false` — ABH keeps the cached copy and does not pull it automatically
+- `install_mode=scripts` — scripts
+- `install_mode=extensions` — Aseprite extensions
+- `install_mode=both` — both mechanisms
+
+User-added repositories should normally start with `auto_update=false`. Enable automatic updates only for repositories you trust.
+
+ABH creates user templates that can be copied and edited. Mixed repositories belong in `sources\mixed\`.
+
+### Backups, logs and bug reports
+
+Aseprite Build Updater can:
+
+- back up `%APPDATA%\Aseprite`
+- restore the newest ABH-created Aseprite configuration backup
+- open user/developer logs
+- export a diagnostic ZIP
+- open the GitHub issue page
+
+Diagnostic files are created locally and are **not uploaded automatically**.
+
+ABH attempts to redact common sensitive values from diagnostic exports, but you should still review a diagnostic package before attaching it publicly.
+
+Found a bug?
+
+https://github.com/tvetzio/aseprite-build-helper/issues
+
+### Uninstaller
+
+Open:
+
+```text
+Aseprite Build Updater
+→ [U] Uninstall
+```
+
+The generated uninstaller currently offers:
+
+```text
+[1] Remove helper runtime files only
+[2] Remove helper runtime files + generated shortcuts
+[3] Remove helper runtime, shortcuts and ABH backups
+[4] Remove local Aseprite source/build folders
+[5] REMOVE ALL ABH-managed content
+[6] REMOVE ALL + export source configurations to ZIP
+[0] Cancel
+```
+
+Options **4, 5 and 6** show additional warnings before destructive actions.
+
+ABH explicitly warns that complete managed folders can contain your own files, themes, scripts, patches or source modifications. Those files can be deleted together with the managed folder.
+
+`REMOVE ALL` requires an additional typed confirmation.
+
+Option 6 first exports:
+
+```text
+ABH\config\sources\
+```
+
+into a ZIP such as:
+
+```text
+ABH-source-config-backup-YYYYMMDD-HHMMSS.zip
+```
+
+next to the original package files. A later setup can detect this backup and offer to restore the source configurations.
+
+Skia is intentionally not removed by `REMOVE ALL`, because ABH does not automatically install Skia.
+
+After a complete uninstall, the original downloaded package files remain untouched unless you delete them yourself.
+
+### License and third-party software
+
+The MIT license in this repository applies to original ABH code. It does not relicense Aseprite, Skia, themes, add-ons or other third-party projects.
+
+See `THIRD_PARTY_NOTICES.md` for third-party project links and notices.
+
+---
+
+<a id="deutsch"></a>
+## Deutsch
+
+Aseprite Build Helper (ABH) ist ein inoffizieller Windows-x64-Helfer, der Aseprite aus dem offiziellen Quellcode lokal kompiliert und den daraus entstandenen Build verwaltet.
+
+ABH verteilt **keine kompilierte `aseprite.exe`**. Der Aseprite-Quellcode wird aus dem offiziellen Repository geklont und auf deinem Computer kompiliert.
+
+### Aktuelles Verhalten in v1.2.9
+
+Die aktuelle Runtime basiert wieder auf dem stabilen v1.2-Ablauf und enthält die während der v1.2.x-Testphase vorgenommenen Korrekturen: Der Builder bleibt Setup-/Compiler-Komponente, der **Aseprite Build Updater** übernimmt Wartung und manuelle Updates, der normale Launcher führt geplante Prüfungen unsichtbar aus, interaktiver Fortschritt bleibt im selben Konsolenfenster, ein nicht erreichbares ABH-Self-Update blockiert keine Aseprite-/Theme-/Add-on-Prüfungen, der Uninstaller wird aus einer temporären Kopie gestartet, damit der verwaltete Runtime-Ordner entfernt werden kann, und Bugreport-Diagnosen werden lokal erzeugt, bevor die GitHub-Issue-Seite geöffnet wird.
+
+### Inhalt der ZIP
+
+Die Release-ZIP enthält nur:
+
+```text
+aseprite-build-helper.bat
+README.md
+LICENSE
+THIRD_PARTY_NOTICES.md
+```
+
+Alle Dateien im Ordner `ABH\` werden erst nach der Einrichtung erzeugt.
+
+### Schnelleinrichtung
+
+1. Erstelle einen eigenen beschreibbaren Ordner.
+2. Entpacke alle vier Paketdateien gemeinsam dort hinein.
+3. Starte `aseprite-build-helper.bat`.
+4. Führe die Prüfung der Voraussetzungen einmal durch.
+5. Der restliche Ablauf erfolgt danach automatisch.
+
+Die Ersteinrichtung führt folgende Schritte aus:
+
+```text
+Voraussetzungen prüfen
+→ Aseprite-Quellcode vorbereiten
+→ Skia prüfen
+→ Aseprite kompilieren
+→ Themes und Add-ons installieren/synchronisieren
+→ Launcher, Updater und Uninstaller erzeugen
+→ Desktop-Verknüpfungen erstellen
+→ Abschluss
+```
+
+Nach erfolgreicher Ersteinrichtung ertönt ein kurzer Windows-Systemsound und Aseprite wird gestartet.
+
+Liegen die Paketdateien lose direkt auf dem Desktop, warnt ABH vorher. Der Grund ist, dass ABH neben der BAT mehrere Arbeitsordner erzeugt.
+
+### Voraussetzungen
+
+ABH prüft unter anderem:
+
+- Git for Windows
+- CMake
+- Ninja
+- Visual-Studio-C++-Toolchain
+- Windows SDK
+- erforderliche Skia-Dateien
+- freien Speicherplatz
+
+Für den derzeitigen initialen Build wird Skia hier erwartet:
+
+```text
+C:\deps\skia\out\Release-x64\skia.lib
+```
+
+Skia-Paket:
+
+https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-Windows-Release-x64.zip
+
+### Sprache
+
+ABH erkennt automatisch die Windows-Oberflächensprache:
+
+- `de-*` → Deutsch
+- alle anderen Sprachen → Englisch
+
+Manuelle Auswahl beim Builder:
+
+```text
+aseprite-build-helper.bat --lang=de
+aseprite-build-helper.bat --lang=en
+```
+
+Updater und Uninstaller verwenden dieselbe Spracherkennung.
+
+### Erzeugte Ordnerstruktur
+
+Nach der Einrichtung liegt alles, was ABH selbst erzeugt, im Ordner `ABH\`:
+
+```text
+ABH\
+├─ launcher\
+│  ├─ aseprite-launcher.vbs
+│  └─ helper_icon.ico
+├─ updater\
+│  ├─ aseprite-build-updater.bat
+│  ├─ force_update.ico
+│  └─ backup\
+├─ uninstaller\
+│  ├─ uninstall-abh.bat
+│  └─ uninstall.ico
+├─ support\
+├─ config\
+│  ├─ settings.ini
+│  └─ sources\
+│     ├─ themes\
+│     ├─ addons\
+│     └─ mixed\
+├─ logs\
+│  ├─ user\
+│  └─ dev\
+├─ reports\
+├─ backups\
+├─ manifest\
+├─ state\
+└─ managed\
+```
+
+ABH-verwaltete Ordner sollten nicht als persönlicher Speicherort verwendet werden. Bei destruktiven Deinstallationsoptionen können komplette verwaltete Ordner entfernt werden – einschließlich Dateien, die du selbst darin abgelegt hast.
+
+### Desktop-Verknüpfungen
+
+ABH erstellt nur noch zwei Verknüpfungen:
+
+- **Aseprite** — normaler Start
+- **Aseprite Build Updater** — Updates, Wartung, Konfiguration, Diagnose und Zugriff auf die Deinstallation
+
+Es gibt bewusst **keine eigene Uninstall-Verknüpfung**. Der Uninstaller bleibt unter `ABH\uninstaller\` und wird über den Aseprite Build Updater geöffnet.
+
+Alte v1.1-Verknüpfungen wie `Aseprite - Force Update Check` oder `Aseprite Build Helper - Uninstall` werden bei der v1.2-Runtime-Reparatur entfernt.
+
+### Aufgaben der einzelnen Komponenten
+
+#### `aseprite-build-helper.bat`
+
+Die ursprüngliche BAT ist der Setup-/Compiler-Teil:
+
+- Ersteinrichtung
+- Prüfung der Build-Voraussetzungen
+- initiales Klonen des Quellcodes
+- Skia-Prüfung
+- Aseprite kompilieren/neu kompilieren
+- neue Aseprite-Releases prüfen und gegebenenfalls bauen
+- Launcher, Updater und Uninstaller reparieren
+
+Nach der Einrichtung zeigt ein direkter Start nur noch compilerbezogene Funktionen. Die laufende Wartung liegt nicht mehr im Builder.
+
+#### `ABH\launcher\aseprite-launcher.vbs`
+
+Diese Datei wird von der Verknüpfung **Aseprite** verwendet. Sie startet den Updater unsichtbar im geplanten Prüfmodus. Ist keine Prüfung fällig, startet Aseprite ohne sichtbares Wartungsmenü.
+
+#### `ABH\updater\aseprite-build-updater.bat`
+
+Der Aseprite Build Updater ist die zentrale Verwaltungsoberfläche.
+
+Aktuelles Menü:
+
+```text
+[1] Alle Updates jetzt prüfen
+[2] Nur ABH-Self-Update prüfen
+[3] Nur Aseprite-Update prüfen
+[4] Themes / Add-ons / Skripte synchronisieren
+[5] Status anzeigen
+[6] Reparatur / neu synchronisieren
+[7] Update-Intervall ändern
+[8] Quellen-Konfigurationen öffnen
+[9] Aseprite-Konfiguration sichern
+[A] Neuestes Konfigurations-Backup wiederherstellen
+[L] Logs öffnen
+[M] Von ABH verwaltete Dateien und Ordner anzeigen
+[D] Diagnosepaket für Bugreport erstellen
+[R] Bug melden
+[U] Deinstallieren
+[0] Beenden
+```
+
+#### `ABH\uninstaller\uninstall-abh.bat`
+
+Der Uninstaller liegt in einem eigenen Ordner. Er wird über den Updater oder bei Bedarf direkt aus diesem Ordner gestartet.
+
+### Automatische Update-Prüfungen
+
+Standardintervall: **12 Stunden**.
+
+Geprüft werden:
+
+1. ABH selbst
+2. Aseprite
+3. Themes
+4. Add-ons/Skripte
+
+Das Intervall kann unter **Aseprite Build Updater → Update-Intervall ändern** gesetzt werden auf:
+
+```text
+1 Stunde
+3 Stunden
+6 Stunden
+12 Stunden (Standard)
+24 Stunden
+benutzerdefiniert (mindestens 1 Stunde)
+```
+
+Gespeichert wird der Wert unter:
+
+```text
+ABH\config\settings.ini
+```
+
+### Self-Update von ABH
+
+Der Aseprite Build Updater kann im offiziellen Projekt nach einer neueren ABH-Version suchen:
+
+https://github.com/tvetzio/aseprite-build-helper
+
+Ablauf eines Self-Updates:
+
+1. Aktuelles offizielles GitHub Release prüfen.
+2. Release-Version mit der installierten ABH-Version vergleichen.
+3. Neue Version anzeigen.
+4. Vor der Installation ausdrücklich nachfragen.
+5. Passendes Release-Asset `abh-win64-v*.zip` herunterladen.
+6. Inhalt der ZIP auf die erwarteten Paketdateien prüfen.
+7. Die vier vorhandenen Paketdateien sichern.
+8. Nur diese Paketdateien ersetzen.
+9. Launcher, Updater und Uninstaller mit der neuen Version neu erzeugen.
+10. Aseprite Build Updater neu starten.
+
+Konfigurationen, Quellen-INIs, Logs, Reports und Backups unter `ABH\` bleiben erhalten.
+
+Schlägt das Einspielen fehl, versucht ABH automatisch, die zuvor gesicherten Paketdateien wiederherzustellen und die vorherige Runtime erneut zu erzeugen.
+
+Eine neue ABH-Version wird **niemals ohne Bestätigung installiert**. Eine automatische Hintergrundprüfung darf feststellen, dass ein Update vorhanden ist; die eigentliche Installation bleibt eine Entscheidung des Nutzers.
+
+> Für die Self-Update-Prüfung muss das GitHub-Repository/Release erreichbar sein. Ist das Repository privat oder GitHub nicht erreichbar, bleibt die installierte Version einfach bestehen.
+
+### Fortschritt, Farben und Abschlusston
+
+Interaktive Einrichtung und Updater-Vorgänge zeigen den aktuellen Schritt direkt im selben Konsolenfenster. Geplante Prüfungen über die normale **Aseprite**-Verknüpfung bleiben unsichtbar.
+
+Farben:
+
+- **Blau/Cyan** — Prüfungen und Aseprite-bezogene Vorgänge
+- **Violett** — Themes
+- **Grün** — Add-ons/Skripte und erfolgreicher Abschluss
+- **Orange/Gelb** — Build/Kompilierung
+- **Gelb** — Warnungen
+- **Rot** — Fehler
+
+Einige Vorgänge wie Kompilieren oder Klonen liefern keinen verlässlichen exakten Prozentwert. ABH zeigt deshalb Phasen-/Schrittfortschritt an, statt einen ungenauen Wert vorzutäuschen.
+
+Nach einem **erfolgreichen interaktiven Abschluss** spielt ABH einen kurzen vorhandenen Windows-Systemton ab, unter anderem nach:
+
+- der Ersteinrichtung
+- einem manuellen Update-Durchlauf
+- einer manuellen Theme-/Add-on-/Skript-Synchronisierung
+- einer erfolgreichen Reparatur/Neusynchronisierung oder einem Rebuild
+
+Geplante Hintergrundprüfungen bleiben stumm. Es wird keine zusätzliche Audiodatei mitgeliefert. Bei einem abgebrochenen oder fehlgeschlagenen Vorgang soll bewusst kein Abschlusston abgespielt werden.
+
+### Eine INI pro Theme/Add-on/Repository
+
+Jede Quelle besitzt ihre eigene INI:
+
+```text
+ABH\config\sources\themes\
+ABH\config\sources\addons\
+ABH\config\sources\mixed\
+```
+
+Beispiel:
+
+```ini
+[Source]
+name=Mein eigenes Add-on
+type=addon
+repository=https://github.com/USER/REPOSITORY.git
+enabled=true
+auto_update=false
+install_mode=both
+managed_by=user
+```
+
+Bedeutung:
+
+- `enabled=true` — ABH verwendet die Quelle
+- `enabled=false` — Quelle wird ignoriert
+- `auto_update=true` — ABH darf automatisch neue Revisionen holen
+- `auto_update=false` — vorhandene lokale Kopie wird verwendet, aber nicht automatisch aktualisiert
+- `install_mode=scripts` — Skripte
+- `install_mode=extensions` — Aseprite-Erweiterungen
+- `install_mode=both` — beides
+
+Bei selbst hinzugefügten Repositories sollte `auto_update=false` zunächst beibehalten werden. Aktiviere automatische Updates nur bei Quellen, denen du vertraust.
+
+### Backups, Logs und Bugreports
+
+Der Updater kann:
+
+- `%APPDATA%\Aseprite` sichern
+- das neueste von ABH erstellte Konfigurations-Backup wiederherstellen
+- User-/Dev-Logs öffnen
+- ein Diagnosepaket als ZIP exportieren
+- die GitHub-Issue-Seite öffnen
+
+Diagnosedateien werden **niemals automatisch hochgeladen**.
+
+ABH versucht typische sensible Werte im Diagnoseexport zu zensieren. Vor einem öffentlichen Upload solltest du das Paket trotzdem selbst prüfen.
+
+Fehler gefunden?
+
+https://github.com/tvetzio/aseprite-build-helper/issues
+
+### Deinstallation
+
+Aufruf:
+
+```text
+Aseprite Build Updater
+→ [U] Deinstallieren
+```
+
+Der Uninstaller bietet:
+
+```text
+[1] Nur Helper-Laufzeitdateien entfernen
+[2] Helper-Laufzeitdateien + erzeugte Verknüpfungen entfernen
+[3] Helper-Laufzeitdateien, Verknüpfungen und ABH-Backups entfernen
+[4] Lokale Aseprite-Quell-/Build-Ordner entfernen
+[5] ALLE von ABH verwalteten Inhalte entfernen
+[6] ALLES entfernen + Quellen-Konfigurationen als ZIP exportieren
+[0] Abbrechen
+```
+
+Bei **4, 5 und 6** erscheinen zusätzliche Warnungen.
+
+ABH weist ausdrücklich darauf hin, dass verwaltete Ordner auch eigene Dateien, Themes, Skripte, Patches oder Quellcodeänderungen enthalten können. Beim vollständigen Löschen des Ordners werden diese ebenfalls entfernt.
+
+`ALLES ENTFERNEN` erfordert zusätzlich eine ausgeschriebene Bestätigung.
+
+Option 6 sichert vorher:
+
+```text
+ABH\config\sources\
+```
+
+in eine Datei wie:
+
+```text
+ABH-source-config-backup-YYYYMMDD-HHMMSS.zip
+```
+
+neben den ursprünglichen Paketdateien. Eine spätere Einrichtung kann diese ZIP erkennen und die Quellen-Konfigurationen auf Wunsch wiederherstellen.
+
+Skia wird bei `ALLES ENTFERNEN` bewusst nicht gelöscht, da ABH Skia nicht automatisch installiert.
+
+Nach einer vollständigen Deinstallation bleiben die ursprünglichen heruntergeladenen Paketdateien bestehen, bis du sie selbst löschst.
+
+### Lizenz und Drittprojekte
+
+Die MIT-Lizenz dieses Repositories gilt für den eigenen ABH-Code. Sie ändert nicht die Lizenzen oder Bedingungen von Aseprite, Skia, Themes, Add-ons oder anderen Drittprojekten.
+
+Weitere Hinweise stehen in `THIRD_PARTY_NOTICES.md`.
