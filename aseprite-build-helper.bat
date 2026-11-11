@@ -12,7 +12,7 @@ rem ABH does not contain or distribute a compiled copy of Aseprite.
 rem Aseprite is cloned from the official repository and compiled locally.
 rem ============================================================================
 
-set "HELPER_VERSION=1.3.10"
+set "HELPER_VERSION=1.3.11"
 set "PROJECT_URL=https://github.com/tvetzio/aseprite-build-helper"
 set "ISSUES_URL=https://github.com/tvetzio/aseprite-build-helper/issues/new"
 set "ROOT=C:\aseprite"
@@ -89,7 +89,7 @@ if "%MODE_ASE_UPDATE%"=="0" if "%MODE_REFRESH_RUNTIME%"=="0" if "%MODE_REBUILD%"
   if errorlevel 1 exit /b 1
 )
 
-rem ABH intentionally keeps generated data beside this BAT.
+rem ABH keeps its runtime data beside this BAT.
 mkdir "%ABH_DIR%" "%SUPPORT_DIR%" "%LAUNCHER_DIR%" "%UPDATER_DIR%" "%UNINSTALLER_DIR%" "%USER_LOG_DIR%" "%DEV_LOG_DIR%" "%REPORT_DIR%" "%BACKUP_DIR%" "%MANIFEST_DIR%" "%STATE_DIR%" "%MANAGED_DIR%" "%CONFIG_DIR%" "%SOURCE_CONFIG_DIR%" "%TOOLS_DIR%" >nul 2>&1
 if not exist "%ABH_DIR%" (
   if /I "%UI_LANG%"=="de" (
@@ -262,7 +262,7 @@ if errorlevel 1 (
 )
 call :write_update_stamps
 
-call :progress_update 100 success "6/6" "Setup completed successfully."
+call :progress_update 100 success "6/6" "Aseprite build completed successfully."
 if /I "%UI_LANG%"=="de" (echo [6/6] Einrichtung abschließen) else (echo [6/6] Finishing setup)
 call :log "First installation completed successfully."
 call :play_setup_complete_sound
@@ -471,7 +471,7 @@ if /I "%UI_LANG%"=="de" (
 exit /b 1
 
 :play_setup_complete_sound
-powershell.exe -NoLogo -NoProfile -WindowStyle Hidden -Command "try { Add-Type -AssemblyName System; [System.Media.SystemSounds]::Asterisk.Play(); Start-Sleep -Milliseconds 650 } catch {}" >nul 2>&1
+powershell.exe -NoLogo -NoProfile -WindowStyle Hidden -Command "$lang='%UI_LANG%'; Add-Type -AssemblyName System.Windows.Forms; if($lang -eq 'de'){$msg='Aseprite-Build erfolgreich abgeschlossen.'}else{$msg='Aseprite build completed successfully.'}; [System.Windows.Forms.MessageBox]::Show($msg,'Aseprite Build Helper',[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null" >nul 2>&1
 exit /b 0
 
 :activate_portable_tools
@@ -881,7 +881,7 @@ $bar=New-Object System.Windows.Forms.ProgressBar;$bar.Location=New-Object System
 $phase=New-Object System.Windows.Forms.Label;$phase.Location=New-Object System.Drawing.Point(22,123);$phase.Size=New-Object System.Drawing.Size(500,22);$phase.Font=New-Object System.Drawing.Font('Segoe UI',9,[System.Drawing.FontStyle]::Bold);$form.Controls.Add($phase)
 $accent=New-Object System.Windows.Forms.Panel;$accent.Location=New-Object System.Drawing.Point(22,153);$accent.Size=New-Object System.Drawing.Size(500,5);$form.Controls.Add($accent)
 $colors=@{check=[Drawing.Color]::FromArgb(45,125,210);aseprite=[Drawing.Color]::FromArgb(45,125,210);theme=[Drawing.Color]::FromArgb(138,74,190);addon=[Drawing.Color]::FromArgb(45,160,90);build=[Drawing.Color]::FromArgb(225,135,40);warning=[Drawing.Color]::FromArgb(210,165,30);error=[Drawing.Color]::FromArgb(200,55,55);success=[Drawing.Color]::FromArgb(45,160,90)}
-$de=@{'Checking prerequisites...'='Voraussetzungen werden geprüft...';'Preparing Aseprite source...'='Aseprite-Quellcode wird vorbereitet...';'Building Aseprite...'='Aseprite wird kompiliert...';'Installing themes...'='Themes werden installiert...';'Installing add-ons and scripts...'='Add-ons und Skripte werden installiert...';'Creating runtime components and shortcuts...'='Launcher, Updater und Verknüpfungen werden erstellt...';'Setup completed successfully.'='Einrichtung erfolgreich abgeschlossen.';'Checking ABH updates...'='ABH-Updates werden geprüft...';'Checking Aseprite updates...'='Aseprite-Updates werden geprüft...';'Aseprite update check failed; installed build will be kept.'='Aseprite-Updateprüfung fehlgeschlagen; die installierte Version bleibt erhalten.';'Checking themes...'='Themes werden geprüft...';'Checking add-ons and scripts...'='Add-ons und Skripte werden geprüft...';'Update check completed.'='Updateprüfung abgeschlossen.';'Configuring CMake...'='CMake wird konfiguriert...';'Compiling Aseprite with Ninja...'='Aseprite wird mit Ninja kompiliert...'}
+$de=@{'Checking prerequisites...'='Voraussetzungen werden geprüft...';'Preparing Aseprite source...'='Aseprite-Quellcode wird vorbereitet...';'Building Aseprite...'='Aseprite wird kompiliert...';'Installing themes...'='Themes werden installiert...';'Installing add-ons and scripts...'='Add-ons und Skripte werden installiert...';'Creating runtime components and shortcuts...'='Launcher, Updater und Verknüpfungen werden erstellt...';'Aseprite build completed successfully.'='Aseprite-Build erfolgreich abgeschlossen.';'Checking ABH updates...'='ABH-Updates werden geprüft...';'Checking Aseprite updates...'='Aseprite-Updates werden geprüft...';'Aseprite update check failed; installed build will be kept.'='Aseprite-Updateprüfung fehlgeschlagen; die installierte Version bleibt erhalten.';'Checking themes...'='Themes werden geprüft...';'Checking add-ons and scripts...'='Add-ons und Skripte werden geprüft...';'Update check completed.'='Updateprüfung abgeschlossen.';'Configuring CMake...'='CMake wird konfiguriert...';'Compiling Aseprite with Ninja...'='Aseprite wird mit Ninja kompiliert...'}
 $script:last=''
 $timer=New-Object System.Windows.Forms.Timer;$timer.Interval=250
 $timer.Add_Tick({try{if(-not(Test-Path -LiteralPath $StatePath)){return};$raw=[IO.File]::ReadAllText($StatePath,[Text.Encoding]::UTF8).Trim();if(-not $raw -or $raw -eq $script:last){return};$script:last=$raw;$p=$raw.Split('|',4);if($p.Count -lt 4){return};if($p[0]-eq'CLOSE'){$timer.Stop();$form.Close();return};$pct=0;[int]::TryParse($p[0],[ref]$pct)|Out-Null;$kind=$p[1];$step=$p[2];$msg=$p[3];if($isDe -and $de.ContainsKey($msg)){$msg=$de[$msg]};$status.Text=$msg;$phase.Text=$step;if($colors.ContainsKey($kind)){$phase.ForeColor=$colors[$kind];$title.ForeColor=$colors[$kind];$accent.BackColor=$colors[$kind]};if($pct -lt 0){$bar.Style='Marquee';$bar.MarqueeAnimationSpeed=25}else{$bar.Style='Continuous';$bar.Value=[Math]::Max(0,[Math]::Min(100,$pct))}}catch{}})
